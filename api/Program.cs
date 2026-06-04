@@ -43,6 +43,9 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseCors(DevCorsPolicy);
 
+// Path-based authorization (mirrors the TS proxy.ts) — after CORS, before endpoints.
+app.UseMiddleware<AuthorizationMiddleware>();
+
 // Create tables + seed on startup (mirrors the TS instrumentation seed; no migrations).
 using (var scope = app.Services.CreateScope())
 {
