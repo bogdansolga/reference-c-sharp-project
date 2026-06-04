@@ -1,8 +1,10 @@
 # CLAUDE.md
 
-Guidance for Claude Code when working in this repository. It is the **C# (.NET 8) port**
-of `../reference-typescript-project`, used as the hands-on showcase for the *Mastering
-Claude Code* course. Same domain and architecture, ASP.NET Core idioms.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+It is the **C# (.NET 8) port** of [`reference-typescript-project`](https://github.com/bogdansolga/reference-next-js-project),
+used as the hands-on showcase for the *Mastering Claude Code* course. Same domain and
+architecture, ASP.NET Core idioms.
 
 ## What this project does
 
@@ -14,17 +16,20 @@ the lists server-side from the API and hosts the chat widget. It exists to be a 
 small codebase for demonstrating how to drive and protect a real project with Claude Code — the
 guardrails in `scripts/` are as much the point as the features.
 
-**How to use it:** run the API (`cd api && dotnet run`) and the web (`cd web && bun dev`), log in,
-and browse. Extend it with `/add-endpoint`. Verify with `dotnet test` + the `scripts/check-*`
+**How to use it:** run the API (`cd api && dotnet run`) and the web (`cd web && npm run dev`), log
+in, and browse. Extend it with `/add-endpoint`. Verify with `dotnet test` + the `scripts/check-*`
 guardrails (installed as git hooks). Full run/test commands below.
 
 ## Layout
 
 ```
-api/    ASP.NET Core 8 Minimal API — all backend logic (the C# port)
-web/    Reused Next.js frontend — proxies /api/* to the C# API
-scripts/ Git-hook guardrails + architecture checks (bash + PowerShell)
+api/      ASP.NET Core 8 Minimal API — all backend logic (the C# port)
+web/      Reused Next.js frontend — proxies /api/* to the C# API
+tests/    xUnit test project (Api.csproj is the only project reference)
+scripts/  Git-hook guardrails + architecture checks (bash + PowerShell)
 ```
+
+The solution (`reference-c-sharp-project.sln`) contains two projects: `Api` and `Tests`.
 
 ## Commands
 
@@ -32,8 +37,9 @@ scripts/ Git-hook guardrails + architecture checks (bash + PowerShell)
 |------|---------|
 | Run API | `cd api && dotnet run` (Kestrel on http://localhost:5099) |
 | Run web | `cd web && npm run dev` (Next.js on http://localhost:3000, proxies to :5099; `bun dev` also works) |
+| Run both | `./scripts/dev.sh` (or `pwsh ./scripts/dev.ps1`) — starts both tiers, installs hooks on first run |
 | Build | `dotnet build` (from repo root, builds the solution) |
-| Test | `dotnet test` |
+| Test | `dotnet test` (27 xUnit tests) |
 | Single test | `dotnet test --filter "FullyQualifiedName~ProductServiceTests"` |
 | Format | `dotnet format` |
 | Format check | `dotnet format --verify-no-changes` |
@@ -50,9 +56,9 @@ on startup.
 ASP.NET Core 8 layered REST API over SQLite (EF Core). Same request flow as the TS reference:
 
 ```
-Endpoint (api/Endpoints/*)        HTTP, calls services only
+Endpoint (api/Endpoints/*)         HTTP, calls services only
   → FluentValidation (api/Validation/)
-  → Service (api/Services/*)       business logic, throws domain exceptions
+  → Service (api/Services/*)        business logic, throws domain exceptions
   → Repository (api/Repositories/*) EF Core data access only
   → AppDbContext (api/Data/) → SQLite
 ```
@@ -72,6 +78,11 @@ Endpoint (api/Endpoints/*)        HTTP, calls services only
 - **Frontend**: `web/` is the TS frontend reused as-is; `next.config.ts` rewrites `/api/v1` +
   `/api/auth` to the C# API. Chat (`/api/chat`) stays in `web/` on Anthropic/Claude.
 
+### Tests
+
+xUnit + NSubstitute + FluentAssertions. Service tests substitute the repository interfaces;
+repository/validator tests run against a real in-memory/file SQLite DB (`tests/TestDb.cs`).
+
 ### Guardrails (scripts/)
 
 Git hooks enforce the architecture. `pre-commit` (build + format + arch checks on staged
@@ -82,6 +93,11 @@ files) and `pre-push` (full build + tests + checks). Config-driven via `arch-che
 
 Both **bash** (`*.sh`) and **PowerShell** (`*.ps1`) variants exist; Windows users without WSL
 run `install.ps1`. Bypass once with `--no-verify`.
+
+### Claude Code tooling
+
+`.claude/` ships the demo setup: the `/add-endpoint` command, a `layered-architecture` skill,
+and a PostToolUse format hook. `.mcp.json` configures `filesystem` + `github` MCP servers.
 
 ## Do NOT
 
