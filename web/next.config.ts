@@ -11,6 +11,13 @@ const nextConfig: NextConfig = {
 
   reactStrictMode: true,
 
+  // Pin the Turbopack workspace root to this app. Without it, Next infers the
+  // monorepo root (multiple bun.lock files) and warns. This project ships its
+  // own web/bun.lock so it runs standalone for course participants.
+  turbopack: {
+    root: import.meta.dirname,
+  },
+
   async rewrites() {
     return [
       { source: "/api/v1/:path*", destination: `${API_URL}/api/v1/:path*` },

@@ -10,10 +10,8 @@ set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# Resolve dotnet (the cask installs to /usr/local/share/dotnet, not always on PATH)
-DOTNET="$(command -v dotnet || true)"
-[ -z "$DOTNET" ] && [ -x "/usr/local/share/dotnet/dotnet" ] && DOTNET="/usr/local/share/dotnet/dotnet"
-[ -z "$DOTNET" ] && { echo "error: dotnet not found — install the .NET 8 SDK (nb install --cask dotnet-sdk@8)"; exit 1; }
+# Require dotnet (the .NET 8 SDK) and bun on PATH
+command -v dotnet >/dev/null 2>&1 || { echo "error: dotnet not found — install the .NET 8 SDK"; exit 1; }
 command -v bun >/dev/null 2>&1 || { echo "error: bun not found — install Bun for the web/ frontend"; exit 1; }
 
 API_PID=""
@@ -34,7 +32,7 @@ echo "Installing web dependencies (bun install)..."
 (cd "$ROOT/web" && bun install) || { echo "error: bun install failed"; exit 1; }
 
 echo "Starting backend  → http://localhost:5099"
-(cd "$ROOT/api" && exec "$DOTNET" run) &
+(cd "$ROOT/api" && exec dotnet run) &
 API_PID=$!
 
 echo "Starting frontend → http://localhost:3000"
