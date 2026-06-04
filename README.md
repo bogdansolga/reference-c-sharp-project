@@ -50,6 +50,15 @@ Set `ANTHROPIC_API_KEY` (copy `web/.env.example` → `web/.env.local`) for the c
 
 ## Run
 
+**One command** — starts both tiers, Ctrl+C stops both:
+
+```bash
+./scripts/dev.sh          # macOS / Linux / Git Bash
+pwsh ./scripts/dev.ps1    # Windows (PowerShell 7+)
+```
+
+Or start the two tiers manually:
+
 ```bash
 # 1) Backend — http://localhost:5099  (creates + seeds the SQLite DB on first run)
 cd api && dotnet run
