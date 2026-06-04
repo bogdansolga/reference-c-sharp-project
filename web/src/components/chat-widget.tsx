@@ -11,7 +11,6 @@ export function ChatWidget() {
   const { messages, sendMessage, status, error } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
-
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (inputValue.trim() && status === "ready") {
@@ -21,7 +20,7 @@ export function ChatWidget() {
   };
 
   return (
-    <div className="fixed right-4 bottom-4 z-50">
+    <div className="fixed right-4 bottom-4 z-60">
       {isOpen ? (
         <div className="flex h-[28rem] w-lg flex-col rounded-lg border border-zinc-700 bg-zinc-900 text-white shadow-lg">
           <div className="flex items-center justify-between border-zinc-700 border-b p-3">
