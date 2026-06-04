@@ -5,7 +5,7 @@
 #   2) Frontend — Next.js web app on http://localhost:3000 (proxies /api/* to the backend)
 # Press Ctrl+C to stop both.
 #
-# Usage: ./scripts/dev.ps1   (PowerShell 7+)
+# Usage: ./scripts/dev.ps1   (PowerShell 7+; web uses npm by default, $env:PM='bun' to use Bun)
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
@@ -14,8 +14,16 @@ if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
     Write-Error 'dotnet not found — install the .NET 8 SDK'
     exit 1
 }
-if (-not (Get-Command bun -ErrorAction SilentlyContinue)) {
-    Write-Error 'bun not found — install Bun for the web/ frontend'
+
+# Pick a Node package manager for web/: npm by default, Bun optional. Override with $env:PM='bun'.
+$pm = $env:PM
+if (-not $pm) {
+    if (Get-Command npm -ErrorAction SilentlyContinue) { $pm = 'npm' }
+    elseif (Get-Command bun -ErrorAction SilentlyContinue) { $pm = 'bun' }
+    else { Write-Error 'no package manager found — install Node.js (npm) or Bun for the web/ frontend'; exit 1 }
+}
+if (-not (Get-Command $pm -ErrorAction SilentlyContinue)) {
+    Write-Error "package manager '$pm' not found"
     exit 1
 }
 
@@ -27,9 +35,9 @@ if ((Test-Path (Join-Path $root '.git')) -and
     & (Join-Path $root 'scripts/git-hooks/install.ps1') $root
 }
 
-Write-Host 'Installing web dependencies (bun install)...'
+Write-Host "Installing web dependencies ($pm install)..."
 Push-Location (Join-Path $root 'web')
-bun install
+& $pm install
 Pop-Location
 
 $procs = @()
@@ -57,7 +65,7 @@ try {
         -WorkingDirectory (Join-Path $root 'api') -NoNewWindow -PassThru
 
     Write-Host 'Starting frontend -> http://localhost:3000'
-    $procs += Start-Process -FilePath 'bun' -ArgumentList 'dev' `
+    $procs += Start-Process -FilePath $pm -ArgumentList 'run', 'dev' `
         -WorkingDirectory (Join-Path $root 'web') -NoNewWindow -PassThru
 
     Write-Host ''

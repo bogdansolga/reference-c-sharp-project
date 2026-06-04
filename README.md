@@ -43,8 +43,9 @@ extend, and protect a real project with Claude Code.
 ## Prerequisites
 
 ```bash
-nb install --cask dotnet-sdk@8     # .NET 8 SDK (only system dependency)
-# Bun is needed for the web/ frontend (already common on dev machines)
+nb install --cask dotnet-sdk@8     # .NET 8 SDK (only required system dependency)
+# The web/ frontend needs a Node package manager — npm (ships with Node.js) by
+# default; Bun is optional (PM=bun ./scripts/dev.sh to use it).
 ```
 Set `ANTHROPIC_API_KEY` (copy `web/.env.example` → `web/.env.local`) for the chat widget.
 
@@ -64,7 +65,7 @@ Or start the two tiers manually:
 cd api && dotnet run
 
 # 2) Frontend — http://localhost:3000  (proxies /api/* to the backend)
-cd web && bun install && bun dev
+cd web && npm install && npm run dev        # or: bun install && bun dev
 ```
 
 Open http://localhost:3000, **log in** (`admin/admin` or `user/user`), then visit Sections /

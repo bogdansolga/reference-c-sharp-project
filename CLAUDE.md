@@ -31,18 +31,19 @@ scripts/ Git-hook guardrails + architecture checks (bash + PowerShell)
 | Task | Command |
 |------|---------|
 | Run API | `cd api && dotnet run` (Kestrel on http://localhost:5099) |
-| Run web | `cd web && bun dev` (Next.js on http://localhost:3000, proxies to :5099) |
+| Run web | `cd web && npm run dev` (Next.js on http://localhost:3000, proxies to :5099; `bun dev` also works) |
 | Build | `dotnet build` (from repo root, builds the solution) |
 | Test | `dotnet test` |
 | Single test | `dotnet test --filter "FullyQualifiedName~ProductServiceTests"` |
 | Format | `dotnet format` |
 | Format check | `dotnet format --verify-no-changes` |
-| Web type+lint | `cd web && bun run verify:all` |
+| Web type+lint | `cd web && npm run verify:all` (or `bun run verify:all`) |
 | Install hooks | `./scripts/git-hooks/install.sh` (bash) or `install.ps1` (Windows/pwsh) |
 
-Local prerequisites: **.NET 8 SDK** (`nb install --cask dotnet-sdk@8`), **Bun** (for `web/`),
-and `ANTHROPIC_API_KEY` for the chat widget. No DB migration step — tables are created and
-seeded on startup.
+Local prerequisites: **.NET 8 SDK** (`nb install --cask dotnet-sdk@8`), a **Node package
+manager** for `web/` — **npm** (with Node.js) by default, **Bun** optional (`PM=bun`) — and
+`ANTHROPIC_API_KEY` for the chat widget. No DB migration step — tables are created and seeded
+on startup.
 
 ## Architecture
 
