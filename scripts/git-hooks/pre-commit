@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# Pre-commit hook (C# port, stack-aware: api/ C# + web/ TS)
+# Runs build/format + architecture checks on staged files.
+# Bypass with: git commit --no-verify
+
+set -e
+
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
+print_error() { echo -e "${RED}x $1${NC}"; }
+print_success() { echo -e "${GREEN}✓ $1${NC}"; }
+print_info() { echo "i $1"; }
+
+# Resolve dotnet (cask installs to /usr/local/share/dotnet, not always on PATH)
+DOTNET="$(command -v dotnet || true)"
+[ -z "$DOTNET" ] && [ -x "/usr/local/share/dotnet/dotnet" ] && DOTNET="/usr/local/share/dotnet/dotnet"
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACM || true)
+STAGED_CS=$(echo "$STAGED" | grep -E '^api/.*\.cs$' || true)
+STAGED_WEB=$(echo "$STAGED" | grep -E '^web/.*\.(ts|tsx)$' || true)
+
+if [ -z "$STAGED_CS" ] && [ -z "$STAGED_WEB" ]; then
+    print_info "No C#/TS source staged, skipping checks"
+    exit 0
+fi
+
+CHECKS_FAILED=0
+echo "Running pre-commit checks..."
+echo ""
+
+# ---- C# (api/) ----
+if [ -n "$STAGED_CS" ] && [ -n "$DOTNET" ]; then
+    echo "→ Building api (dotnet build)..."
+    if "$DOTNET" build api/Api.csproj --nologo -v q > /tmp/csharp-build.txt 2>&1; then
+        print_success "Build passed"
+    else
+        print_error "Build failed"; tail -15 /tmp/csharp-build.txt | sed 's/^/    /'; CHECKS_FAILED=1
+    fi
+
+    echo "→ Checking format (dotnet format --verify-no-changes)..."
+    if "$DOTNET" format api/Api.csproj --verify-no-changes --no-restore > /tmp/csharp-fmt.txt 2>&1; then
+        print_success "Format passed"
+    else
+        print_error "Format issues (run: dotnet format)"; tail -10 /tmp/csharp-fmt.txt | sed 's/^/    /'; CHECKS_FAILED=1
+    fi
+
+    for chk in check-architecture check-validators check-deep-architecture; do
+        if [ -f "./scripts/$chk.sh" ]; then
+            echo "→ Running $chk..."
+            args=""; [ "$chk" != "check-deep-architecture" ] && args="--staged"
+            if ./scripts/$chk.sh $args > /tmp/$chk.txt 2>&1; then
+                print_success "$chk passed"
+            else
+                if [ "$chk" = "check-deep-architecture" ] && ! grep -q "error(s)" /tmp/$chk.txt; then
+                    print_success "$chk passed (warnings only)"
+                else
+                    print_error "$chk failed"; grep -vE "^Checking|^Running|^$" /tmp/$chk.txt | head -10 | sed 's/^/    /'; CHECKS_FAILED=1
+                fi
+            fi
+        fi
+    done
+elif [ -n "$STAGED_CS" ] && [ -z "$DOTNET" ]; then
+    print_error "dotnet not found — cannot verify C# changes"; CHECKS_FAILED=1
+fi
+
+# ---- Web (web/) ----
+if [ -n "$STAGED_WEB" ] && [ -d "web" ]; then
+    echo "→ Linting web (biome)..."
+    if (cd web && bunx biome check . > /tmp/web-lint.txt 2>&1); then
+        print_success "Web lint passed"
+    else
+        print_error "Web lint failed"; tail -15 /tmp/web-lint.txt | sed 's/^/    /'; CHECKS_FAILED=1
+    fi
+fi
+
+echo ""
+echo "----------------------------------------"
+if [ $CHECKS_FAILED -eq 1 ]; then
+    print_error "Pre-commit checks failed!"; echo ""; echo "Bypass with: git commit --no-verify"; exit 1
+else
+    print_success "All pre-commit checks passed!"; exit 0
+fi

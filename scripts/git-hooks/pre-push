@@ -1,0 +1,92 @@
+#!/bin/bash
+
+# Pre-push hook (C# port, stack-aware: api/ C# + web/ TS)
+# Runs full build, tests, format, and architecture checks before push.
+# Bypass with: git push --no-verify
+
+set -e
+
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
+print_error() { echo -e "${RED}x $1${NC}"; }
+print_success() { echo -e "${GREEN}✓ $1${NC}"; }
+print_warning() { echo -e "${YELLOW}! $1${NC}"; }
+
+# Skip in CI (the pipeline runs these separately)
+if [ -n "$CI" ] || [ -n "$GITHUB_ACTIONS" ] || [ -n "$GITLAB_CI" ] || [ -n "$JENKINS_URL" ]; then
+    print_warning "CI environment detected - skipping pre-push hook"; exit 0
+fi
+
+DOTNET="$(command -v dotnet || true)"
+[ -z "$DOTNET" ] && [ -x "/usr/local/share/dotnet/dotnet" ] && DOTNET="/usr/local/share/dotnet/dotnet"
+
+FAILED=0
+SLN="reference-c-sharp-project.sln"
+
+echo "Running pre-push checks..."
+echo "----------------------------------------"
+echo ""
+
+run() { # name, command...
+    local name="$1"; shift
+    echo "[$name] Starting..."
+    if "$@" > "/tmp/push-$name.log" 2>&1; then
+        print_success "$name: Passed"
+    else
+        print_error "$name: Failed"; tail -20 "/tmp/push-$name.log" | sed 's/^/  /'; FAILED=1
+    fi
+    echo ""
+}
+
+if [ -n "$DOTNET" ]; then
+    run "Build" "$DOTNET" build "$SLN" --nologo -v q
+    run "Format" "$DOTNET" format "$SLN" --verify-no-changes --no-restore
+    run "Tests" "$DOTNET" test "$SLN" --nologo -v q
+else
+    print_error "dotnet not found"; FAILED=1; echo ""
+fi
+
+# Architecture checks (full, non-staged)
+for chk in check-architecture check-validators; do
+    [ -f "./scripts/$chk.sh" ] && run "$chk" ./scripts/$chk.sh
+done
+if [ -f "./scripts/check-deep-architecture.sh" ]; then
+    echo "[Deep Arch] Starting..."
+    if ./scripts/check-deep-architecture.sh > /tmp/push-deep.log 2>&1; then
+        print_success "Deep Arch: Passed"
+    elif ! grep -q "error(s)" /tmp/push-deep.log; then
+        print_success "Deep Arch: Passed (with warnings)"
+    else
+        print_error "Deep Arch: Failed"; grep -E "^(x|  -)" /tmp/push-deep.log | head -10 | sed 's/^/  /'; FAILED=1
+    fi
+    echo ""
+fi
+
+# Web checks (if present)
+if [ -d "web" ]; then
+    run "Web Lint" sh -c "cd web && bunx biome check ."
+fi
+
+# File-size warnings (non-blocking) — service 500, component .tsx 400, other 300
+echo "[File Size] Checking..."
+VIOLATIONS=0
+while IFS= read -r file; do
+    [ -f "$file" ] || continue
+    lines=$(wc -l < "$file"); base=$(basename "$file")
+    case "$file" in
+        *Service.cs) threshold=500; kind=service ;;
+        *.tsx)       threshold=400; kind=component ;;
+        *)           threshold=300; kind=utility ;;
+    esac
+    if [ "$lines" -gt "$threshold" ]; then
+        echo "  $file: $lines lines ($kind, limit $threshold)"; VIOLATIONS=$((VIOLATIONS + 1))
+    fi
+done <<< "$(git ls-files 'api/*.cs' 'web/*.ts' 'web/*.tsx' 2>/dev/null)"
+[ "$VIOLATIONS" -gt 0 ] && print_warning "File Size: $VIOLATIONS file(s) exceed limits" || print_success "File Size: Passed"
+echo ""
+
+echo "----------------------------------------"
+if [ $FAILED -eq 1 ]; then
+    print_error "Pre-push checks failed!"; echo ""; echo "Bypass with: git push --no-verify"; exit 1
+else
+    print_success "All pre-push checks passed!"; exit 0
+fi
