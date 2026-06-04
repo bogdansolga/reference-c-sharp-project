@@ -1,6 +1,7 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI coding agents (Claude Code, Gemini CLI, Copilot CLI, Codex,
+and other agentic CLI tools) when working with code in this repository.
 
 It is the **C# (.NET 8) port** of [`reference-typescript-project`](https://github.com/bogdansolga/reference-next-js-project),
 used as the hands-on showcase for the *Mastering Claude Code* course. Same domain and
@@ -13,12 +14,12 @@ cookie auth and a Claude-backed chat widget. CRUD lives at `/api/v1/{product,sec
 `/api/auth/*`. `/api/v1` requires a session (writes require ADMIN). SQLite is created and seeded
 on startup (3 sections, 5 products; users `admin/admin` and `user/user`). The `web/` UI renders
 the lists server-side from the API and hosts the chat widget. It exists to be a realistic,
-small codebase for demonstrating how to drive and protect a real project with Claude Code — the
-guardrails in `scripts/` are as much the point as the features.
+small codebase for demonstrating how to drive and protect a real project with an AI coding agent
+— the guardrails in `scripts/` are as much the point as the features.
 
 **How to use it:** run the API (`cd api && dotnet run`) and the web (`cd web && npm run dev`), log
-in, and browse. Extend it with `/add-endpoint`. Verify with `dotnet test` + the `scripts/check-*`
-guardrails (installed as git hooks). Full run/test commands below.
+in, and browse. Extend it with the `add-endpoint` agent command. Verify with `dotnet test` + the
+`scripts/check-*` guardrails (installed as git hooks). Full run/test commands below.
 
 ## Layout
 
@@ -30,6 +31,9 @@ scripts/  Git-hook guardrails + architecture checks (bash + PowerShell)
 ```
 
 The solution (`reference-c-sharp-project.sln`) contains two projects: `Api` and `Tests`.
+
+Each tier has its own module guide: [`api/AGENTS.md`](api/AGENTS.md) (backend layering and
+conventions) and [`web/AGENTS.md`](web/AGENTS.md) (frontend, proxying, chat widget).
 
 ## Commands
 
@@ -94,10 +98,13 @@ files) and `pre-push` (full build + tests + checks). Config-driven via `arch-che
 Both **bash** (`*.sh`) and **PowerShell** (`*.ps1`) variants exist; Windows users without WSL
 run `install.ps1`. Bypass once with `--no-verify`.
 
-### Claude Code tooling
+### Agent tooling
 
-`.claude/` ships the demo setup: the `/add-endpoint` command, a `layered-architecture` skill,
-and a PostToolUse format hook. `.mcp.json` configures `filesystem` + `github` MCP servers.
+`.claude/` ships the Claude Code demo setup: the `add-endpoint` command, a `layered-architecture`
+skill, and a PostToolUse format hook. `.mcp.json` configures `filesystem` + `github` MCP servers
+(MCP is supported by Claude Code, Gemini CLI, and other agents). When porting the setup to another
+agentic CLI, mirror these conventions into that tool's equivalent (e.g. `GEMINI.md`, commands,
+and hook configuration) — the architecture rules they enforce are tool-independent.
 
 ## Do NOT
 
