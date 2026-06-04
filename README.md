@@ -1,7 +1,7 @@
 # reference-c-sharp-project
 
 A small, production-shaped **ASP.NET Core 8** reference app — the C# port of
-[`reference-typescript-project`](../reference-typescript-project), used as the hands-on
+[`reference-typescript-project`](https://github.com/bogdansolga/reference-next-js-project), used as the hands-on
 showcase for the *Mastering Claude Code* course.
 
 Same domain (products + sections + auth + an AI chat widget), same layered architecture,
@@ -104,7 +104,7 @@ This repo is the live demo canvas. Each part has something concrete to drive:
 
 Instructor demos here; attendees practice the same moves on their own codebase. The guardrails
 are stack-portable — the identical checks exist in
-[`reference-typescript-project`](../reference-typescript-project) as import-path boundaries and
+[`reference-typescript-project`](https://github.com/bogdansolga/reference-next-js-project) as import-path boundaries and
 here as `using`-namespace boundaries.
 
 See [`CLAUDE.md`](./CLAUDE.md) for the full architecture, conventions, and the guardrail rules.
