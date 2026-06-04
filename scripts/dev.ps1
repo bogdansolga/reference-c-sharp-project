@@ -1,5 +1,6 @@
 #!/usr/bin/env pwsh
 # Run the whole stack with one command:
+#   0) Guardrails — install the git hooks on first run (architecture checks on commit/push)
 #   1) Backend  — ASP.NET Core API on http://localhost:5099 (creates + seeds SQLite on first run)
 #   2) Frontend — Next.js web app on http://localhost:3000 (proxies /api/* to the backend)
 # Press Ctrl+C to stop both.
@@ -16,6 +17,14 @@ if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
 if (-not (Get-Command bun -ErrorAction SilentlyContinue)) {
     Write-Error 'bun not found — install Bun for the web/ frontend'
     exit 1
+}
+
+# First run: install the git-hook guardrails if they aren't in place yet.
+$hooksDir = Join-Path $root '.git/hooks'
+if ((Test-Path (Join-Path $root '.git')) -and
+    (-not (Test-Path (Join-Path $hooksDir 'pre-commit')) -or -not (Test-Path (Join-Path $hooksDir 'pre-push')))) {
+    Write-Host 'Installing git hooks (first run)...'
+    & (Join-Path $root 'scripts/git-hooks/install.ps1') $root
 }
 
 Write-Host 'Installing web dependencies (bun install)...'

@@ -93,7 +93,9 @@ dotnet build && dotnet format --verify-no-changes
 
 ## Guardrails
 
-Install the git hooks so the architecture is enforced on every commit/push:
+The git hooks enforce the architecture on every commit/push. **`scripts/dev.sh` / `dev.ps1`
+install them automatically on first run**, so just starting the project is enough. To install
+them manually (or re-install after changing them):
 
 ```bash
 ./scripts/git-hooks/install.sh           # macOS / Linux / Git Bash
