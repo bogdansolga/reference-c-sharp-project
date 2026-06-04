@@ -5,8 +5,9 @@ import type { ProductResponse } from "@/lib/types/product";
 
 async function ProductList() {
   const cookieStore = await cookies();
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/v1/product`, {
+  const response = await fetch(`${process.env.API_URL || "http://localhost:5099"}/api/v1/product`, {
     headers: { Cookie: cookieStore.toString() },
+    cache: "no-store",
   });
   const products: ProductResponse[] = response.ok ? await response.json() : [];
 

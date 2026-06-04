@@ -4,6 +4,20 @@ Guidance for Claude Code when working in this repository. It is the **C# (.NET 8
 of `../reference-typescript-project`, used as the hands-on showcase for the *Mastering
 Claude Code* course. Same domain and architecture, ASP.NET Core idioms.
 
+## What this project does
+
+A small two-tier app: a REST API for managing **products** grouped into **sections**, with
+cookie auth and a Claude-backed chat widget. CRUD lives at `/api/v1/{product,section}`; login at
+`/api/auth/*`. `/api/v1` requires a session (writes require ADMIN). SQLite is created and seeded
+on startup (3 sections, 5 products; users `admin/admin` and `user/user`). The `web/` UI renders
+the lists server-side from the API and hosts the chat widget. It exists to be a realistic,
+small codebase for demonstrating how to drive and protect a real project with Claude Code — the
+guardrails in `scripts/` are as much the point as the features.
+
+**How to use it:** run the API (`cd api && dotnet run`) and the web (`cd web && bun dev`), log in,
+and browse. Extend it with `/add-endpoint`. Verify with `dotnet test` + the `scripts/check-*`
+guardrails (installed as git hooks). Full run/test commands below.
+
 ## Layout
 
 ```

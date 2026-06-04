@@ -9,6 +9,25 @@ ASP.NET Core idioms. It deliberately ships the things that make Claude Code prod
 real codebase: a layered design, a `CLAUDE.md`, deterministic git-hook guardrails, and a
 `.claude/` configuration (commands, a skill, hooks, MCP).
 
+## What it does
+
+A two-tier app for managing **products** grouped into **sections**, with auth and an AI chat assistant:
+
+- **REST API** (`api/`, ASP.NET Core 8) — full CRUD for products and sections at `/api/v1/*`,
+  cookie-based login at `/api/auth/*`. Data is in SQLite via EF Core, created and seeded on
+  first run (3 sections, 5 products). Two seeded users: `admin/admin` (full access) and
+  `user/user` (read-only).
+- **Authorization** — `/api/v1/*` requires a logged-in session (`401` otherwise); write
+  operations (POST/PUT/DELETE) require the `ADMIN` role (`403` otherwise). `/api/auth/*` is open.
+- **Web UI** (`web/`, Next.js 16) — a login page, product and section list pages (server-rendered
+  from the API), and a floating **chat widget** backed by Claude (Anthropic) that answers
+  questions about the API.
+- **Guardrails** (`scripts/`) — git hooks that enforce the layered architecture on every commit
+  and push, so the design can't silently rot.
+
+The point isn't the CRUD — it's a realistic, small codebase that demonstrates how to drive,
+extend, and protect a real project with Claude Code.
+
 ## Stack
 
 | Layer | Technology |
@@ -39,8 +58,14 @@ cd api && dotnet run
 cd web && bun install && bun dev
 ```
 
-Open http://localhost:3000. Log in with `admin/admin` (full access) or `user/user`
-(read-only). The API is also usable directly:
+Open http://localhost:3000, **log in** (`admin/admin` or `user/user`), then visit Sections /
+Products. The lists are empty until you log in — they are auth-gated.
+
+> **Port note:** the web server components fetch the API directly at `API_URL` (default
+> `http://localhost:5099`), so the UI works even if Next picks a port other than 3000. If your
+> API runs elsewhere, set `API_URL` in `web/.env.local`.
+
+The API is also usable directly:
 
 ```bash
 curl http://localhost:5099/api/v1/section          # 401 — auth required
@@ -65,5 +90,21 @@ Install the git hooks so the architecture is enforced on every commit/push:
 ./scripts/git-hooks/install.sh           # macOS / Linux / Git Bash
 pwsh ./scripts/git-hooks/install.ps1     # Windows without WSL
 ```
+
+## Using it in the *Mastering Claude Code* course
+
+This repo is the live demo canvas. Each part has something concrete to drive:
+
+- **Part 1 — Foundations:** replay an Analyze→Plan→Execute session (e.g. add an endpoint); review
+  the diff; watch a guardrail hook block an unsafe edit.
+- **Part 2 — Daily workflow:** read `CLAUDE.md`; run the `docs/ai-for-coding.md` exercise ladder.
+- **Part 3 — Extensibility:** the git-hook guardrails the agent can't skip; the `.claude/`
+  commands (`/add-endpoint`), the `layered-architecture` skill, and the PostToolUse format hook.
+- **Part 4 — Power tools:** the `.mcp.json` servers; LSP for go-to-definition / find-references.
+
+Instructor demos here; attendees practice the same moves on their own codebase. The guardrails
+are stack-portable — the identical checks exist in
+[`reference-typescript-project`](../reference-typescript-project) as import-path boundaries and
+here as `using`-namespace boundaries.
 
 See [`CLAUDE.md`](./CLAUDE.md) for the full architecture, conventions, and the guardrail rules.

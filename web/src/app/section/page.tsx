@@ -5,8 +5,9 @@ import type { SectionResponse } from "@/lib/types/section";
 
 async function SectionList() {
   const cookieStore = await cookies();
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/v1/section`, {
+  const response = await fetch(`${process.env.API_URL || "http://localhost:5099"}/api/v1/section`, {
     headers: { Cookie: cookieStore.toString() },
+    cache: "no-store",
   });
   const sections: SectionResponse[] = response.ok ? await response.json() : [];
 
