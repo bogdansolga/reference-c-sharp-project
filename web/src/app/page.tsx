@@ -1,58 +1,64 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { ChatWidget } from "@/components/chat-widget";
 import { getSession } from "@/lib/auth";
-import { LogoutButton } from "./logout-button";
 
-async function AuthStatus() {
+async function HeroActions() {
   const session = await getSession();
 
   if (session) {
     return (
-      <div className="text-center">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Logged in as <span className="font-semibold">{session.user.username}</span> ({session.user.role})
+      <div className="flex flex-col items-center gap-3">
+        <p className="text-sm text-zinc-500">
+          Signed in as <span className="font-semibold text-brand-ink">{session.user.username}</span> (
+          {session.user.role})
         </p>
-        <div className="mt-4 flex gap-4">
+        <div className="flex gap-3">
           <Link
-            className="rounded-md bg-zinc-900 px-4 py-2 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            className="rounded-lg bg-brand-accent px-5 py-2.5 font-semibold text-white transition-colors hover:bg-brand-ink"
             href="/section"
           >
-            Sections
+            Browse Sections
           </Link>
           <Link
-            className="rounded-md bg-zinc-900 px-4 py-2 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            className="rounded-lg border border-border-soft bg-surface px-5 py-2.5 font-semibold text-brand-ink transition-colors hover:border-brand-accent"
             href="/product"
           >
-            Products
+            Browse Products
           </Link>
         </div>
-        <LogoutButton />
       </div>
     );
   }
 
   return (
     <Link
-      className="rounded-md bg-zinc-900 px-4 py-2 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+      className="rounded-lg bg-brand-accent px-6 py-3 font-semibold text-white transition-colors hover:bg-brand-ink"
       href="/login"
     >
-      Login
+      Get started
     </Link>
   );
 }
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8">
-      <h1 className="font-semibold text-2xl">Product API</h1>
-      <p className="mt-2 text-zinc-600 dark:text-zinc-400">The API endpoints are available at /api/v1</p>
+    <main className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center px-6 py-16">
+      <Image alt="Zempler Bank" className="mb-8" height={120} priority src="/zempler-logo.png" width={120} />
+      <h1 className="text-center font-bold font-display text-4xl tracking-tight sm:text-5xl">
+        Product &amp; Section Management
+      </h1>
+      <p className="mt-3 max-w-md text-center text-zinc-500">
+        A small showcase API and UI for the Mastering Claude Code course. Sign in to browse the catalog.
+      </p>
 
-      <div className="mt-6">
-        <Suspense fallback={<div className="h-10" />}>
-          <AuthStatus />
+      <div className="mt-8">
+        <Suspense fallback={<div className="h-12" />}>
+          <HeroActions />
         </Suspense>
       </div>
+
       <ChatWidget />
     </main>
   );
