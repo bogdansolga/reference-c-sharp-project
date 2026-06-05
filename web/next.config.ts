@@ -11,6 +11,12 @@ const nextConfig: NextConfig = {
 
   reactStrictMode: true,
 
+  // Surface browser console logs in the dev terminal (moved out of `experimental`
+  // in Next 16.2; was `experimental.browserDebugInfoInTerminal`).
+  logging: {
+    browserToTerminal: true,
+  },
+
   // Pin the Turbopack workspace root to this app. Without it, Next infers the
   // monorepo root (multiple bun.lock files) and warns. This project ships its
   // own web/bun.lock so it runs standalone for course participants.
@@ -32,7 +38,6 @@ const nextConfig: NextConfig = {
     optimizeServerReact: true,
     turbopackMemoryLimit: 1024 * 1024 * 1024 * 2,
     turbopackSourceMaps: true,
-    browserDebugInfoInTerminal: true,
     turbopackFileSystemCacheForDev: true,
   },
 };

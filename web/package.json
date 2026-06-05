@@ -13,13 +13,16 @@
     "verify:all": "bun run type-check && bun run lint"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^2.0.0",
+    "@ai-sdk/anthropic": "^3.0.81",
     "@ai-sdk/react": "^3.0.198",
     "ai": "^6.0.196",
-    "next": "16.1.5",
+    "next": "16.2.7",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-markdown": "^10.1.0"
+  },
+  "overrides": {
+    "postcss": "^8.5.10"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.16",
