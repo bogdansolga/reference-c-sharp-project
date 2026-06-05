@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import Link from "next/link";
 import { Suspense } from "react";
 import type { SectionResponse } from "@/lib/types/section";
 
@@ -12,13 +11,21 @@ async function SectionList() {
   const sections: SectionResponse[] = response.ok ? await response.json() : [];
 
   if (sections.length === 0) {
-    return <p className="text-zinc-500">No sections found.</p>;
+    return (
+      <div className="rounded-xl border border-border-soft border-dashed bg-surface p-10 text-center text-zinc-500">
+        No sections yet.
+      </div>
+    );
   }
 
   return (
     <ul className="space-y-2">
-      {sections.map((section) => (
-        <li className="rounded-md border p-3 dark:border-zinc-700" key={section.id}>
+      {sections.map((section, i) => (
+        <li
+          className="row-reveal rounded-xl border border-border-soft bg-surface px-4 py-3 font-medium shadow-sm"
+          key={section.id}
+          style={{ animationDelay: `${i * 40}ms` }}
+        >
           {section.name}
         </li>
       ))}
@@ -28,18 +35,9 @@ async function SectionList() {
 
 export default function SectionsPage() {
   return (
-    <main className="mx-auto min-h-screen max-w-2xl p-8">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-semibold text-2xl">Sections</h1>
-        <Link
-          className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-          href="/"
-        >
-          ← Back
-        </Link>
-      </div>
-
-      <Suspense fallback={<p className="text-zinc-500">Loading...</p>}>
+    <main className="mx-auto max-w-2xl px-6 py-10">
+      <h1 className="mb-6 font-bold font-display text-3xl tracking-tight">Sections</h1>
+      <Suspense fallback={<p className="text-zinc-400">Loading…</p>}>
         <SectionList />
       </Suspense>
     </main>
