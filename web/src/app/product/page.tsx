@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import Link from "next/link";
 import { Suspense } from "react";
 import type { ProductResponse } from "@/lib/types/product";
 
@@ -12,15 +11,25 @@ async function ProductList() {
   const products: ProductResponse[] = response.ok ? await response.json() : [];
 
   if (products.length === 0) {
-    return <p className="text-zinc-500">No products found.</p>;
+    return (
+      <div className="rounded-xl border border-border-soft border-dashed bg-surface p-10 text-center text-zinc-500">
+        No products yet.
+      </div>
+    );
   }
 
   return (
     <ul className="space-y-2">
-      {products.map((product) => (
-        <li className="flex items-center justify-between rounded-md border p-3 dark:border-zinc-700" key={product.id}>
-          <span>{product.name}</span>
-          <span className="text-zinc-600 dark:text-zinc-400">${product.price.toFixed(2)}</span>
+      {products.map((product, i) => (
+        <li
+          className="row-reveal flex items-center justify-between rounded-xl border border-border-soft bg-surface px-4 py-3 shadow-sm"
+          key={product.id}
+          style={{ animationDelay: `${i * 40}ms` }}
+        >
+          <span className="font-medium">{product.name}</span>
+          <span className="rounded-full bg-badge-bg px-2.5 py-1 font-semibold text-brand-accent text-sm">
+            ${product.price.toFixed(2)}
+          </span>
         </li>
       ))}
     </ul>
@@ -29,18 +38,17 @@ async function ProductList() {
 
 export default function ProductsPage() {
   return (
-    <main className="mx-auto min-h-screen max-w-2xl p-8">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-semibold text-2xl">Products</h1>
-        <Link
-          className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-          href="/"
-        >
-          ← Back
-        </Link>
-      </div>
-
-      <Suspense fallback={<p className="text-zinc-500">Loading...</p>}>
+    <main className="mx-auto max-w-2xl px-6 py-10">
+      <h1 className="mb-6 font-bold font-display text-3xl tracking-tight">Products</h1>
+      <Suspense
+        fallback={
+          <ul className="space-y-2">
+            {[1, 2, 3].map((n) => (
+              <li className="h-[50px] animate-pulse rounded-xl border border-border-soft bg-surface" key={n} />
+            ))}
+          </ul>
+        }
+      >
         <ProductList />
       </Suspense>
     </main>
