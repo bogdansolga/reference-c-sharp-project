@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Geist_Mono, Manrope } from "next/font/google";
 import "@/styles/globals.css";
+import { SiteHeader } from "@/components/site-header";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -34,6 +35,7 @@ export default function RootLayout({
       <body
         className={`${bricolage.variable} ${manrope.variable} ${geistMono.variable} min-h-screen bg-canvas text-brand-ink antialiased`}
       >
+        <SiteHeader />
         {children}
       </body>
     </html>
