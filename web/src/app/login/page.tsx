@@ -39,9 +39,10 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8">
-      <div className="w-full max-w-sm">
-        <h1 className="mb-6 text-center font-semibold text-2xl">Login</h1>
+    <main className="flex min-h-[calc(100vh-64px)] items-center justify-center px-6 py-16">
+      <div className="w-full max-w-sm rounded-2xl border border-border-soft bg-surface p-8 shadow-sm">
+        <h1 className="mb-1 text-center font-bold font-display text-2xl tracking-tight">Sign in</h1>
+        <p className="mb-6 text-center text-sm text-zinc-500">Welcome back to Zempler Bank</p>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
@@ -49,7 +50,7 @@ export default function LoginPage() {
               Username
             </label>
             <input
-              className="w-full rounded-md border px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800"
+              className="w-full rounded-lg border border-border-soft px-3 py-2 outline-none transition focus:border-brand-accent focus:ring-2 focus:ring-brand-spark"
               id="username"
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -63,7 +64,7 @@ export default function LoginPage() {
               Password
             </label>
             <input
-              className="w-full rounded-md border px-3 py-2 dark:border-zinc-700 dark:bg-zinc-800"
+              className="w-full rounded-lg border border-border-soft px-3 py-2 outline-none transition focus:border-brand-accent focus:ring-2 focus:ring-brand-spark"
               id="password"
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -72,21 +73,20 @@ export default function LoginPage() {
             />
           </div>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && <p className="text-red-600 text-sm">{error}</p>}
 
           <button
-            className="w-full rounded-md bg-zinc-900 px-4 py-2 text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            className="w-full rounded-lg bg-brand-accent px-4 py-2.5 font-semibold text-white transition-colors hover:bg-brand-ink disabled:opacity-50"
             disabled={loading}
             type="submit"
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Signing in…" : "Sign in"}
           </button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-zinc-500">
-          <p>Test credentials:</p>
-          <p className="font-mono">user / user (USER role)</p>
-          <p className="font-mono">admin / admin (ADMIN role)</p>
+        <div className="mt-6 rounded-lg bg-badge-bg px-3 py-2 text-center text-sm text-zinc-600">
+          <p className="font-medium text-brand-ink">Test credentials</p>
+          <p className="font-mono text-xs">user / user · admin / admin</p>
         </div>
       </div>
     </main>
