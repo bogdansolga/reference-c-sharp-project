@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Geist_Mono, Manrope } from "next/font/google";
+import { Suspense } from "react";
 import "@/styles/globals.css";
 import { SiteHeader } from "@/components/site-header";
 
@@ -35,7 +36,9 @@ export default function RootLayout({
       <body
         className={`${bricolage.variable} ${manrope.variable} ${geistMono.variable} min-h-screen bg-canvas text-brand-ink antialiased`}
       >
-        <SiteHeader />
+        <Suspense fallback={<div className="h-[60px] bg-brand-ink" />}>
+          <SiteHeader />
+        </Suspense>
         {children}
       </body>
     </html>

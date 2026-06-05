@@ -12,7 +12,7 @@ export async function SiteHeader() {
         <Link className="flex items-center gap-3" href="/">
           <span className="overflow-hidden rounded-lg bg-white">
             <Image
-              alt="Zempler Bank"
+              alt=""
               className="h-9 w-9 object-cover"
               height={36}
               src="/zempler-logo.png"
