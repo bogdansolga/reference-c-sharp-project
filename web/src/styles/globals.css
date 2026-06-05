@@ -63,7 +63,7 @@ body {
   color: inherit;
 
   pre {
-    @apply bg-zinc-800 p-2 rounded overflow-x-auto my-2;
+    @apply bg-zinc-800 text-zinc-100 p-2 rounded overflow-x-auto my-2;
   }
   code {
     @apply text-sm;

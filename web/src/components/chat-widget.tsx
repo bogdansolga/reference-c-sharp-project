@@ -2,6 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
+import { MessageCircle, X } from "lucide-react";
 import { type FormEvent, useState } from "react";
 import Markdown from "react-markdown";
 
@@ -22,18 +23,22 @@ export function ChatWidget() {
   return (
     <div className="fixed right-4 bottom-4 z-60">
       {isOpen ? (
-        <div className="flex h-[28rem] w-lg flex-col rounded-lg border border-zinc-700 bg-zinc-900 text-white shadow-lg">
-          <div className="flex items-center justify-between border-zinc-700 border-b p-3">
-            <span className="font-medium">Chat</span>
-            <button className="text-zinc-400 hover:text-white" onClick={() => setIsOpen(false)}>
-              ✕
+        <div className="flex h-[28rem] w-lg flex-col overflow-hidden rounded-2xl border border-border-soft bg-surface shadow-xl">
+          <div className="flex items-center justify-between bg-brand-ink px-4 py-3 text-white">
+            <span className="font-bold font-display tracking-tight">Ask AI</span>
+            <button
+              className="text-zinc-300 transition-colors hover:text-brand-spark"
+              onClick={() => setIsOpen(false)}
+              type="button"
+            >
+              <X className="h-4 w-4" />
             </button>
           </div>
           <div className="flex-1 space-y-3 overflow-y-auto p-4">
             {messages.map((m) => (
               <div className={`text-base ${m.role === "user" ? "text-right" : "text-left"}`} key={m.id}>
                 <div
-                  className={`inline-block max-w-full rounded px-3 py-2 ${m.role === "user" ? "bg-blue-600" : "bg-zinc-700"}`}
+                  className={`inline-block max-w-full rounded-2xl px-3 py-2 ${m.role === "user" ? "bg-brand-accent text-white" : "bg-badge-bg text-brand-ink"}`}
                 >
                   {m.parts.map((part, i) => {
                     if (part.type !== "text") {
@@ -53,25 +58,26 @@ export function ChatWidget() {
                 </div>
               </div>
             ))}
-            {status === "submitted" && <div className="text-base text-zinc-400">Thinking...</div>}
-            {error && <div className="rounded bg-red-900/20 px-3 py-2 text-base text-red-400">{error.message}</div>}
+            {status === "submitted" && <div className="text-base text-zinc-500">Thinking…</div>}
+            {error && <div className="rounded-lg bg-red-50 px-3 py-2 text-base text-red-600">{error.message}</div>}
           </div>
-          <form className="border-zinc-700 border-t p-3" onSubmit={handleSubmit}>
+          <form className="border-border-soft border-t p-3" onSubmit={handleSubmit}>
             <input
-              className="w-full rounded border border-zinc-600 bg-zinc-800 px-3 py-2 text-base text-white placeholder-zinc-400"
+              className="w-full rounded-lg border border-border-soft bg-white px-3 py-2 text-base text-brand-ink outline-none transition placeholder:text-zinc-400 focus:border-brand-accent focus:ring-2 focus:ring-brand-spark"
               disabled={status !== "ready"}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Ask something..."
+              placeholder="Ask something…"
               value={inputValue}
             />
           </form>
         </div>
       ) : (
         <button
-          className="flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-3 font-medium text-sm text-white shadow-xl hover:bg-zinc-800"
+          className="flex items-center gap-2 rounded-lg bg-brand-ink px-4 py-3 font-semibold text-sm text-white shadow-xl transition-colors hover:bg-brand-accent"
           onClick={() => setIsOpen(true)}
+          type="button"
         >
-          <span>💬</span> Ask AI
+          <MessageCircle className="h-4 w-4 text-brand-spark" /> Ask AI
         </button>
       )}
     </div>
