@@ -37,7 +37,15 @@ export default function SectionsPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-10">
       <h1 className="mb-6 font-bold font-display text-3xl tracking-tight">Sections</h1>
-      <Suspense fallback={<p className="text-zinc-400">Loading…</p>}>
+      <Suspense
+        fallback={
+          <ul className="space-y-2">
+            {[1, 2, 3].map((n) => (
+              <li className="h-[50px] animate-pulse rounded-xl border border-border-soft bg-surface" key={n} />
+            ))}
+          </ul>
+        }
+      >
         <SectionList />
       </Suspense>
     </main>

@@ -23,7 +23,7 @@ export async function SiteHeader() {
           <span className="font-bold font-display text-lg tracking-tight">Zempler Bank</span>
         </Link>
 
-        <nav className="flex items-center gap-5 text-sm">
+        <nav aria-label="Main navigation" className="flex items-center gap-5 text-sm">
           <Link className="font-medium text-zinc-300 transition-colors hover:text-brand-spark" href="/section">
             Sections
           </Link>

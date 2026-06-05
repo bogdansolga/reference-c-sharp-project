@@ -44,7 +44,7 @@ async function HeroActions() {
 
 export default function Home() {
   return (
-    <main className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center px-6 py-16">
+    <main className="flex min-h-[calc(100vh-60px)] flex-col items-center justify-center px-6 py-16">
       <Image alt="Zempler Bank" className="mb-8" height={120} priority src="/zempler-logo.png" width={120} />
       <h1 className="text-center font-bold font-display text-4xl tracking-tight sm:text-5xl">
         Product &amp; Section Management

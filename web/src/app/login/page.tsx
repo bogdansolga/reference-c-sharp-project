@@ -39,7 +39,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-[calc(100vh-64px)] items-center justify-center px-6 py-16">
+    <main className="flex min-h-[calc(100vh-60px)] items-center justify-center px-6 py-16">
       <div className="w-full max-w-sm rounded-2xl border border-border-soft bg-surface p-8 shadow-sm">
         <h1 className="mb-1 text-center font-bold font-display text-2xl tracking-tight">Sign in</h1>
         <p className="mb-6 text-center text-sm text-zinc-500">Welcome back to Zempler Bank</p>
