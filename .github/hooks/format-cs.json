@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "hooks": {
+    "postToolUse": [
+      {
+        "type": "command",
+        "bash": "./.github/hooks/scripts/format-cs.sh",
+        "timeoutSec": 60
+      }
+    ]
+  }
+}
